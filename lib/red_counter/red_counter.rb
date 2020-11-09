@@ -1,5 +1,12 @@
 module Red_Counter
 
+    # Create a time in the timezone of the plugin 
+    def self.time_new_intz year, month, day, hour, min
+        tz = ActiveSupport::TimeZone[Setting['plugin_red_counter']['rc_wordday_timezone']]
+        tz.parse("#{year}-#{month}-#{day} #{hour}:#{min}")
+    end
+
+
     class Helper
         extend Redmine::Utils::DateCalculation
 
@@ -7,26 +14,32 @@ module Red_Counter
         # Converts from any time to working times
         #
         def self.sanitize_time aTime, rc_cfg, is_start
+            # WorkDay is expressed in a certain timezone => convert also aTime in the same timezone before comparing
+            aTime = aTime.in_time_zone(rc_cfg.rc_wordday_timezone)
             # If occurs during not working days move to first valid time
             if non_working_week_days.include? aTime.to_date.cwday
                 nwd = next_working_date(aTime.to_date)
-                return Time.new(nwd.year, nwd.month, nwd.day, rc_cfg.workday_start_time.hour, rc_cfg.workday_start_time.minute)
+                # return Time.new(nwd.year, nwd.month, nwd.day, rc_cfg.workday_start_time.hour, rc_cfg.workday_start_time.minute)
+                return Red_Counter::time_new_intz(nwd.year, nwd.month, nwd.day, rc_cfg.workday_start_time.hour, rc_cfg.workday_start_time.minute)
             end
 
             aTod = Tod::TimeOfDay(aTime)
 
             # started before workday => workday_start_time
             if aTod < rc_cfg.workday_start_time
-                return Time.new(aTime.year, aTime.month, aTime.day, rc_cfg.workday_start_time.hour, rc_cfg.workday_start_time.minute)
+                # return Time.new(aTime.year, aTime.month, aTime.day, rc_cfg.workday_start_time.hour, rc_cfg.workday_start_time.minute)
+                return Red_Counter::time_new_intz(aTime.year, aTime.month, aTime.day, rc_cfg.workday_start_time.hour, rc_cfg.workday_start_time.minute)
             # finished after workday => workday_end_time
             elsif aTod > rc_cfg.workday_end_time
-                return Time.new(aTime.year, aTime.month, aTime.day, rc_cfg.workday_end_time.hour, rc_cfg.workday_end_time.minute)
+                # return Time.new(aTime.year, aTime.month, aTime.day, rc_cfg.workday_end_time.hour, rc_cfg.workday_end_time.minute)
+                return Red_Counter::time_new_intz(aTime.year, aTime.month, aTime.day, rc_cfg.workday_end_time.hour, rc_cfg.workday_end_time.minute)
             # started or finished during workday => ok
             elsif rc_cfg.workday_period_1.include?(aTod) || rc_cfg.workday_period_2.include?(aTod)
                 return aTime
             # between period_1 and period_2
             else
-                return Time.new(aTime.year, aTime.month, aTime.day, rc_cfg.rc_end_wordday_time_1.hour, rc_cfg.rc_end_wordday_time_1.minute)
+                # return Time.new(aTime.year, aTime.month, aTime.day, rc_cfg.rc_end_wordday_time_1.hour, rc_cfg.rc_end_wordday_time_1.minute)
+                return Red_Counter::time_new_intz(aTime.year, aTime.month, aTime.day, rc_cfg.rc_end_wordday_time_1.hour, rc_cfg.rc_end_wordday_time_1.minute)
             end
         end
 
@@ -36,7 +49,8 @@ module Red_Counter
         def self.eval_effective_seconds fromTime, toTime, rc_cfg
             startTime = sanitize_time fromTime, rc_cfg, true
             endTime = sanitize_time toTime, rc_cfg, false
-            Rails.logger.debug("eval_effective_seconds: from: #{fromTime} - to: #{toTime} - fromSani: #{startTime} - toSani: #{endTime} ")
+            Rails.logger.info("eval_effective_seconds: from: #{fromTime} - to: #{toTime} - fromSani: #{startTime} - toSani: #{endTime} ")
+            # STDOUT.puts("eval_effective_seconds: from: #{fromTime} - to: #{toTime} - fromSani: #{startTime} - toSani: #{endTime} ")
 
             startTod = Tod::TimeOfDay(startTime)
             endTod = Tod::TimeOfDay(endTime)
@@ -54,8 +68,12 @@ module Red_Counter
             # different days: first day + last day + full working days in the middle
             # working_days counts day as at 00:00 (so it's like excluding to) => adding 1 day only to fromTime
             #       working_days(sunday, monday) == 0 --- working_days(monday, tuesday) == 1
-            firstDayEndTime = Time.new(startTime.year, startTime.month, startTime.day, rc_cfg.workday_end_time.hour, rc_cfg.workday_end_time.minute)
-            lastDayStartTime = Time.new(endTime.year, endTime.month, endTime.day, rc_cfg.workday_start_time.hour, rc_cfg.workday_start_time.minute)
+            # Here starTime is already in the right timezone => create times in that timezone
+            
+            # firstDayEndTime = Time.new(startTime.year, startTime.month, startTime.day, rc_cfg.workday_end_time.hour, rc_cfg.workday_end_time.minute)
+            firstDayEndTime = Red_Counter::time_new_intz(startTime.year, startTime.month, startTime.day, rc_cfg.workday_end_time.hour, rc_cfg.workday_end_time.minute)
+            # lastDayStartTime = Time.new(endTime.year, endTime.month, endTime.day, rc_cfg.workday_start_time.hour, rc_cfg.workday_start_time.minute)
+            lastDayStartTime = Red_Counter::time_new_intz(endTime.year, endTime.month, endTime.day, rc_cfg.workday_start_time.hour, rc_cfg.workday_start_time.minute)
             return eval_effective_seconds(startTime, firstDayEndTime, rc_cfg) +
                    eval_effective_seconds(lastDayStartTime, endTime, rc_cfg) +
                    working_days((startTime.to_date + 1), (endTime.to_date)) * rc_cfg.wordday_duration_seconds

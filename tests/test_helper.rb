@@ -2,6 +2,8 @@
 # Load the normal Rails helper
 require File.expand_path(File.dirname(__FILE__) + '/../../../test/test_helper')
 
+Dir[Rails.root.join(File.dirname(__FILE__), 'unit', 'common', '*.rb')].each { |f| require f }
+
 class RedCounter::TestCase
     def self.create_fixtures(fixtures_directory, table_names, class_names = {})
       if ActiveRecord::VERSION::MAJOR >= 4

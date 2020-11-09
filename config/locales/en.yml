@@ -16,7 +16,7 @@ en:
   rc_result_format_seconds: "Seconds"
   rc_result_format_minutes: "Minutes"
   rc_result_format_hours: "Hours"
-
+  
   rc_config_new: "Create a new Counter"
   rc_config_edit: "Edit Counters"
   rc_config_destroy: "Delete Counter"
@@ -32,7 +32,9 @@ en:
   rc_config_start_wordday_time_hours_desc: "Hours go from 0 to 24"
   rc_config_time_second_period_optional: "Second Period is optional if you do not need any pause between periods"
   rc_config_end_wordday_time_end_greater_start: "End Time must be greater than Start Time"
-
+  rc_config_wordday_timezone: "Work Day Time Zone"
+  rc_config_wordday_timezone_desc: "Work Day Hours will be evaluated according to this Time Zone"
+  
   rc_config_created: "Counter created"
   rc_config_updated: "Counter updated"
   rc_configs_updated: "Counters updated"

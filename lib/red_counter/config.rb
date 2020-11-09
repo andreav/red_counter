@@ -7,6 +7,10 @@ module Red_Counter
            Rails.logger if Rails.logger.info?
         end
 
+        # -----------------------------------
+        # model constants
+        # -----------------------------------
+
         RCTYPE_ELAPSED = 1
         RCTYPE_OCCURRENCES = 2
 
@@ -29,6 +33,24 @@ module Red_Counter
             ]
         end    
 
+        # -----------------------------------
+        # Config management
+        # -----------------------------------
+
+        def rc_wordday_timezone_code
+            unless @rc_wordday_timezone_code
+                @rc_wordday_timezone_code = Setting['plugin_red_counter']['rc_wordday_timezone']
+            end
+            @rc_wordday_timezone_code
+        end
+
+        def rc_wordday_timezone
+            unless @rc_wordday_timezone
+                @rc_wordday_timezone = ActiveSupport::TimeZone[rc_wordday_timezone_code]
+            end
+            @rc_wordday_timezone
+        end        
+
         def is_date_config_valid_1
             return (rc_start_wordday_time_1 != nil && rc_end_wordday_time_1 != nil && rc_end_wordday_time_1 > rc_start_wordday_time_1)
         end
@@ -44,7 +66,7 @@ module Red_Counter
             rc_start_wordday_time_hour = Setting['plugin_red_counter']["rc_#{startend}_wordday_time_hour_#{pos}"]
             rc_start_wordday_time_minutes = Setting['plugin_red_counter']["rc_#{startend}_wordday_time_minutes_#{pos}"].blank? ? 0 : Setting['plugin_red_counter']["rc_#{startend}_wordday_time_minutes_#{pos}"]
             rc_start_wordday_time = rc_start_wordday_time_hour.blank? ? nil : Tod::TimeOfDay.new(rc_start_wordday_time_hour, rc_start_wordday_time_minutes, 0)
-            logger.info("red_counter: rc_#{startend}_wordday_time_#{pos} #{rc_start_wordday_time}") if logger
+            # logger.info("red_counter: rc_#{startend}_wordday_time_#{pos} #{rc_start_wordday_time}") if logger
             return rc_start_wordday_time
         end
 

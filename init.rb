@@ -12,6 +12,7 @@ Redmine::Plugin.register :red_counter do
   requires_redmine version_or_higher: '4.1'
 
   settings :default => {
+    'rc_wordday_timezone' => 'UTC',
     'rc_start_wordday_time_hour_1' => '8',
     'rc_start_wordday_time_minutes_1' => '30',
     'rc_end_wordday_time_hour_1' => '12',

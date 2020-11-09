@@ -4,6 +4,7 @@ class TestUtils
     # Config
     #
     def self.set_workday_default
+        set_workday_timezone "UTC"
         set_workday_period_1 8, 30, 12, 30
         set_workday_period_2 13, 30, 17, 30
     end
@@ -20,6 +21,10 @@ class TestUtils
         Setting['plugin_red_counter']['rc_start_wordday_time_minutes_2'] = start_minutes.to_s
         Setting['plugin_red_counter']['rc_end_wordday_time_hour_2'] = end_hour.to_s
         Setting['plugin_red_counter']['rc_end_wordday_time_minutes_2'] = end_minutes.to_s
+    end
+
+    def self.set_workday_timezone(tz_code)
+        Setting['plugin_red_counter']['rc_wordday_timezone'] = tz_code
     end
 
     #
