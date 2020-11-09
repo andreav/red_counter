@@ -1,0 +1,45 @@
+<div class="contextual">
+    <%= link_to l(:rc_config_new), { :controller => 'rc_config', :action => "new" }, { :class => 'icon icon-add' }  %>
+    <%= link_to l(:rc_config_edit), { :controller => 'rc_config', :action => "edit" }, { :class => 'icon icon-edit' }  %>
+    <%= link_to l(:rc_eval_time_spent_job_schedule), { :controller => 'rc_config', :action => "schedule_eval_time_spent_full_by_journals" }, { :class => 'icon icon-summary' }  %>
+</div>
+
+<p><label><%= l(:rc_config_start_wordday_time_1)%>: </label>
+<%= number_field_tag 'settings[rc_start_wordday_time_hour_1]', @settings['rc_start_wordday_time_hour_1'], { in: 0..24, step: 1}%> : 
+<%= number_field_tag 'settings[rc_start_wordday_time_minutes_1]', @settings['rc_start_wordday_time_minutes_1'], { in: 0..60, step: 1}%>
+<br />
+<em><%= l(:rc_config_start_wordday_time_hours_desc)%></em>
+</p>
+
+<p><label><%= l(:rc_config_end_wordday_time_1)%>: </label>
+<%= number_field_tag 'settings[rc_end_wordday_time_hour_1]', @settings['rc_end_wordday_time_hour_1'], { in: 0..24, step: 1}%> : 
+<%= number_field_tag 'settings[rc_end_wordday_time_minutes_1]', @settings['rc_end_wordday_time_minutes_1'], { in: 0..60, step: 1}%>
+<br />
+<em><%= l(:rc_config_start_wordday_time_hours_desc)%></em>
+<br />
+<em><%= l(:rc_config_end_wordday_time_end_greater_start)%></em>
+</p>
+
+<br />
+<br />
+
+<p><label><%= l(:rc_config_start_wordday_time_2)%>: </label>
+<%= number_field_tag 'settings[rc_start_wordday_time_hour_2]', @settings['rc_start_wordday_time_hour_2'], { in: 0..24, step: 1}%> : 
+<%= number_field_tag 'settings[rc_start_wordday_time_minutes_2]', @settings['rc_start_wordday_time_minutes_2'], { in: 0..60, step: 1}%>
+<br />
+<em><%= l(:rc_config_time_second_period_optional)%></em>
+<br />
+<em><%= l(:rc_config_start_wordday_time_hours_desc)%></em>
+</p>
+
+<p><label><%= l(:rc_config_end_wordday_time_2)%>: </label>
+<%= number_field_tag 'settings[rc_end_wordday_time_hour_2]', @settings['rc_end_wordday_time_hour_2'], { in: 0..24, step: 1}%> : 
+<%= number_field_tag 'settings[rc_end_wordday_time_minutes_2]', @settings['rc_end_wordday_time_minutes_2'], { in: 0..60, step: 1}%>
+<br />
+<em><%= l(:rc_config_time_second_period_optional)%></em>
+<br />
+<em><%= l(:rc_config_start_wordday_time_hours_desc)%></em>
+<br />
+<em><%= l(:rc_config_end_wordday_time_end_greater_start)%></em>
+</p>
+

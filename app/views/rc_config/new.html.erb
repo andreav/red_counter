@@ -1,0 +1,14 @@
+<h1><%= l(:rc_config_new)%></h1>
+
+<div class="box tabular">
+<%= form_for :rc_config, url: {action: "create"}, html: {class: ""} do |f| %>
+    <%= render(partial: "form", locals: {form: f}) %>
+
+</div>
+
+<p>
+    <%= f.submit l(:button_add)%>
+    <%= link_to l(:button_cancel), {:controller => 'rc_config', :action => "edit"},  { :style => 'margin-left: 1em;' } %>
+</p>
+
+<% end %>

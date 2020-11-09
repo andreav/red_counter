@@ -1,0 +1,39 @@
+# English strings go here
+en:
+  permission_view_redcounter_config: "Show RedCounter configuration"
+  permission_edit_redcounter_config: "Edit RedCounter configuration"
+
+  red_counter: "RedCounter"
+  
+  rc_config_description: "Description"
+  rc_config_custom_field: "Custom Field for result"
+  rc_config_result_format: "Result Format"
+  rc_config_rc_type: "Counter type"
+  rc_config_status: "State"
+
+  rc_type_duration: "Measure time in state"
+  rc_type_occurrences: "Measure how many times occurs"
+  rc_result_format_seconds: "Seconds"
+  rc_result_format_minutes: "Minutes"
+  rc_result_format_hours: "Hours"
+
+  rc_config_new: "Create a new Counter"
+  rc_config_edit: "Edit Counters"
+  rc_config_destroy: "Delete Counter"
+  rc_messsage_delete_config: "Confirm deleting counter?"
+  rc_eval_time_spent_job_schedule: "Run update counters"
+  rc_eval_time_spent_job_scheduled: "Update counters job launched"
+
+  rc_config_settings: "RedCounter Settings"
+  rc_config_start_wordday_time_1: "Work Day Start Time (First Period)"
+  rc_config_end_wordday_time_1: "Work Day End Time (First Period)"
+  rc_config_start_wordday_time_2: "Work Day Start Time (Second Period)"
+  rc_config_end_wordday_time_2: "Work Day End Time (Second Period)"
+  rc_config_start_wordday_time_hours_desc: "Hours go from 0 to 24"
+  rc_config_time_second_period_optional: "Second Period is optional if you do not need any pause between periods"
+  rc_config_end_wordday_time_end_greater_start: "End Time must be greater than Start Time"
+
+  rc_config_created: "Counter created"
+  rc_config_updated: "Counter updated"
+  rc_configs_updated: "Counters updated"
+  rc_configs_deleted: "Counter deleted"

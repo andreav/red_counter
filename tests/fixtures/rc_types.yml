@@ -1,0 +1,8 @@
+# duration:
+#     id: 1
+#     typecode: 'DURATION'
+#     description: 'Measure duration time'
+# occurrences:
+#     id: 2
+#     typecode: 'OCCURRENCES'
+#     description: 'Measure how many times'

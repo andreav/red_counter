@@ -1,0 +1,24 @@
+<p>
+  <label><%= l(:rc_config_description) %>:</label>
+  <%= form.text_field :description %>
+</p>
+
+<p>
+  <label><%= l(:rc_config_custom_field) %>:</label>
+  <%= form.select :custom_field_id, options_for_select(@custom_fields_for_select, config[:custom_field_id]) %>
+</p>
+
+<p>
+  <label><%= l(:rc_config_rc_type) %>:</label>
+  <%= form.select :rc_type_id, options_for_select(@type_fields_for_select, config[:rc_type_id])  %>
+</p>
+
+<p>
+  <label><%= l(:rc_config_status) %>:</label>
+  <%= form.select :status_id, options_for_select(@status_fields_for_select, config[:status_id])  %>
+</p>
+
+<p>
+  <label><%= l(:rc_config_result_format) %>:</label>
+  <%= form.select :result_format, options_for_select(@result_format_fields_for_select, config[:result_format])  %>
+</p>
