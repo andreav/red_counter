@@ -131,12 +131,15 @@ module Red_Counter
         def self.add_elapsed_time issueCounterResults, issue_id, elapsedTime_secs, counter_config
             custom_field_id = counter_config.custom_field_id
             elapsedTime = elapsedTime_secs
-            if( counter_config.result_format == Red_Counter::Config::RESULT_FORMAT_MINUTES)
+            if(counter_config.result_format == Red_Counter::Config::RESULT_FORMAT_MINUTES)
                 elapsedTime = elapsedTime_secs / 60
-            elsif( counter_config.result_format == Red_Counter::Config::RESULT_FORMAT_HOURS)
-                # if the custom fiels is int, we cannot write  a float
-                # elapsedTime = (elapsedTime_secs.to_f / (60*60)).round(1)
-                elapsedTime = elapsedTime_secs / (60*60)
+            elsif(counter_config.result_format == Red_Counter::Config::RESULT_FORMAT_HOURS)
+                # if the custom fiels is int, we cannot write a float
+                if(counter_config.custom_field.field_format == "float")
+                    elapsedTime = (elapsedTime_secs.to_f / (60*60)).round(1)
+                else
+                    elapsedTime = elapsedTime_secs / (60*60)
+                end
             end
             Rails.logger.info("    issue_id: #{issue_id} - counter: #{counter_config.description} - add_elapsed_time: #{elapsedTime}" )
  
@@ -266,7 +269,7 @@ module Red_Counter
             rc_cfg = Red_Counter::Config.new
             now = DateTime.now unless now != nil # use the same "now" for all issues
 
-            countersElapsedTime = RcConfig.where(rc_type_id: Red_Counter::Config::RCTYPE_ELAPSED)
+            countersElapsedTime = RcConfig.where(rc_type_id: Red_Counter::Config::RCTYPE_ELAPSED).includes(:custom_field)
             issueCounterResults = {}  # issue[:issue_id][:cf_id] = result
 
             countersElapsedTime.each do |currCounterCfg|

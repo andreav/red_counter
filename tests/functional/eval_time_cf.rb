@@ -71,7 +71,7 @@ class EvalTimeParamsTest < ActionController::TestCase
     
     assert_equal 4.5*60*60, res[i1.id][cf_time_in_new_sec.id]
     assert_equal 4.5*60   , res[i1.id][cf_time_in_new_min.id]
-    assert_equal 4.5      , res[i1.id][cf_time_in_new_hou.id]
+    assert_equal 4      , res[i1.id][cf_time_in_new_hou.id]
   end
 
 end
