@@ -80,10 +80,8 @@ module Red_Counter
 
         end
 
-        #
-        # Given a timeseries of state changes, eval counter periods
-        #
-        def self.process_issue_journal_details issueCounterResults, issue_jounal_details, counter_config, rc_cfg
+        # eval time elapsed
+        def self.process_issue_journal_details_elapsed issueCounterResults, issue_jounal_details, counter_config, rc_cfg
             # STDOUT.puts( "issue #{issue_jounal_details.first.journal.journalized_id}" )
 
             # issue started already in counter state?
@@ -125,6 +123,27 @@ module Red_Counter
 
             end
 
+        end
+
+        # eval occurrences
+        def self.process_issue_journal_details_occurrences issueCounterResults, issue_jounal_details, counter_config, rc_cfg
+            # STDOUT.puts( "issue #{issue_jounal_details.first.journal.journalized_id}" )
+            hitCount = issue_jounal_details.select { |journal_det| journal_det.value.to_i == counter_config.status_id && 
+                                                                   journal_det.old_value.to_i != journal_det.value.to_i 
+                                                   }.count
+
+            self.add_elapsed_time issueCounterResults, issue_jounal_details.last.journal.journalized_id, hitCount, counter_config
+        end
+
+        #
+        # Given a timeseries of state changes, eval counter periods
+        #
+        def self.process_issue_journal_details issueCounterResults, issue_jounal_details, counter_config, rc_cfg
+            if counter_config.rc_type_id == Red_Counter::Config::RCTYPE_ELAPSED
+                return process_issue_journal_details_elapsed(issueCounterResults, issue_jounal_details, counter_config, rc_cfg)
+            elsif counter_config.rc_type_id == Red_Counter::Config::RCTYPE_OCCURRENCES
+                return process_issue_journal_details_occurrences(issueCounterResults, issue_jounal_details, counter_config, rc_cfg)
+            end
         end
 
         # utility to sum counts
@@ -201,13 +220,13 @@ module Red_Counter
             issue_creation_map = issues_batch.index_by(&:id)
             issues_batch_ids = issue_creation_map.keys
 
-            journals_by_issue = JournalDetail.includes(:journal)                             \
-                                .where(prop_key: 'status_id')                    \
-                                .where("(old_value = ? or value = ?)", currCounterCfg.status_id, currCounterCfg.status_id)      \
+            journals_by_issue = JournalDetail.includes(:journal)
+                                .where(prop_key: 'status_id')
+                                .where("(old_value = ? or value = ?)", currCounterCfg.status_id, currCounterCfg.status_id)
                                 .where(journals: {journalized_type: 'issue'})
                                 .where(journals: {journalized_id: issues_batch_ids})
                                 .order(:id)
-                                .group_by {|j| j.journal.journalized_id }
+                            .group_by {|j| j.journal.journalized_id }
             
             journals_by_issue.each do |issue_id, issue_jounal_details|
 
@@ -269,7 +288,8 @@ module Red_Counter
             rc_cfg = Red_Counter::Config.new
             now = DateTime.now unless now != nil # use the same "now" for all issues
 
-            countersElapsedTime = RcConfig.where(rc_type_id: Red_Counter::Config::RCTYPE_ELAPSED).includes(:custom_field)
+            # countersElapsedTime = RcConfig.where(rc_type_id: Red_Counter::Config::RCTYPE_ELAPSED).includes(:custom_field)
+            countersElapsedTime = RcConfig.all.includes(:custom_field)
             issueCounterResults = {}  # issue[:issue_id][:cf_id] = result
 
             countersElapsedTime.each do |currCounterCfg|

@@ -1,7 +1,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 require_relative '../test_utils'
 
-class EvalTimeNewAndAssignedTest < ActionController::TestCase
+class EvalOccurNewAndAssignedTest < ActionController::TestCase
   fixtures :projects,
            :users,
            :roles,
@@ -29,43 +29,35 @@ class EvalTimeNewAndAssignedTest < ActionController::TestCase
     TestUtils.set_workday_default
     TestUtils.enable_module_on_project 1
     @request.session[:user_id] = 1
+
+    @cf_occur_in_new_and_assigned = TestUtils.create_custom_filed 'IssueCustomField', 'Time_In_New_And_Assigned', 'int', 1
+    @rcConfig_Occur_In_Assigned_1 = RcConfig.create(description: "New and Assigned Counter status 1", status_id: 1, rc_type_id: Red_Counter::Config::RCTYPE_OCCURRENCES, custom_field_id: @cf_occur_in_new_and_assigned.id)
+    @rcConfig_Occur_In_Assigned_2 = RcConfig.create(description: "New and Assigned Counter status 2", status_id: 2, rc_type_id: Red_Counter::Config::RCTYPE_OCCURRENCES, custom_field_id: @cf_occur_in_new_and_assigned.id)
   end
 
   #
   # cfg: new + assigned in same counter
   #
   def test_newass_cfg_issue_new
-    cf_time_in_new_and_assigned = TestUtils.create_custom_filed 'IssueCustomField', 'Time_In_New_And_Assigned', 'float', 1
-    rcConfig_Time_In_Assigned = RcConfig.create(description: "New and Assigned Counter", status_id: 1, rc_type_id: 1, custom_field_id: cf_time_in_new_and_assigned.id)
-    rcConfig_Time_In_Assigned = RcConfig.create(description: "New and Assigned Counter", status_id: 2, rc_type_id: 1, custom_field_id: cf_time_in_new_and_assigned.id)
-
     i = TestUtils.create_issue(Time.new(2020, 11, 2, 7, 30), "RedCounter", 1)
 
     now = Time.new(2020, 11, 2, 12, 00)
     res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
 
-    assert_equal 3.5*60*60, res[i.id][cf_time_in_new_and_assigned.id]
+    assert_equal 1, res[i.id][@cf_occur_in_new_and_assigned.id]
   end
 
   def test_newass_cfg_issue_new_assigned
-    cf_time_in_new_and_assigned = TestUtils.create_custom_filed 'IssueCustomField', 'Time_In_New_And_Assigned', 'float', 1
-    rcConfig_Time_In_Assigned = RcConfig.create(description: "New and Assigned Counter", status_id: 1, rc_type_id: 1, custom_field_id: cf_time_in_new_and_assigned.id)
-    rcConfig_Time_In_Assigned = RcConfig.create(description: "New and Assigned Counter", status_id: 2, rc_type_id: 1, custom_field_id: cf_time_in_new_and_assigned.id)
-
     i = TestUtils.create_issue(Time.new(2020, 11, 2, 7, 30), "RedCounter", 1)
     TestUtils.move_issue_to_assigned i, Time.new(2020, 11, 2, 9, 00)
 
     now = Time.new(2020, 11, 2, 13, 00)
     res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
 
-    assert_equal 4*60*60, res[i.id][cf_time_in_new_and_assigned.id]
+    assert_equal 2, res[i.id][@cf_occur_in_new_and_assigned.id]
   end
 
   def test_newass_cfg_issue_new_assigned_new
-    cf_time_in_new_and_assigned = TestUtils.create_custom_filed 'IssueCustomField', 'Time_In_New_And_Assigned', 'float', 1
-    rcConfig_Time_In_Assigned = RcConfig.create(description: "New and Assigned Counter", status_id: 1, rc_type_id: 1, custom_field_id: cf_time_in_new_and_assigned.id)
-    rcConfig_Time_In_Assigned = RcConfig.create(description: "New and Assigned Counter", status_id: 2, rc_type_id: 1, custom_field_id: cf_time_in_new_and_assigned.id)
-
     i = TestUtils.create_issue(Time.new(2020, 11, 2, 7, 30), "RedCounter", 1)
     TestUtils.move_issue_to_assigned i, Time.new(2020, 11, 2, 9, 00)
     TestUtils.move_issue_to_new i, Time.new(2020, 11, 2, 10, 00)
@@ -73,14 +65,10 @@ class EvalTimeNewAndAssignedTest < ActionController::TestCase
     now = Time.new(2020, 11, 2, 19, 00)
     res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
 
-    assert_equal 8*60*60, res[i.id][cf_time_in_new_and_assigned.id]
+    assert_equal 3, res[i.id][@cf_occur_in_new_and_assigned.id]
   end
 
   def test_newass_cfg_issue_new_assigned_new_resolved
-    cf_time_in_new_and_assigned = TestUtils.create_custom_filed 'IssueCustomField', 'Time_In_New_And_Assigned', 'float', 1
-    rcConfig_Time_In_Assigned = RcConfig.create(description: "New and Assigned Counter", status_id: 1, rc_type_id: 1, custom_field_id: cf_time_in_new_and_assigned.id)
-    rcConfig_Time_In_Assigned = RcConfig.create(description: "New and Assigned Counter", status_id: 2, rc_type_id: 1, custom_field_id: cf_time_in_new_and_assigned.id)
-
     i = TestUtils.create_issue(Time.new(2020, 11, 2, 7, 30), "RedCounter", 1)
     TestUtils.move_issue_to_assigned i, Time.new(2020, 11, 2, 9, 00)
     TestUtils.move_issue_to_new i, Time.new(2020, 11, 2, 10, 00)
@@ -89,14 +77,10 @@ class EvalTimeNewAndAssignedTest < ActionController::TestCase
     now = Time.new(2020, 11, 2, 19, 00)
     res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
 
-    assert_equal 2.5*60*60, res[i.id][cf_time_in_new_and_assigned.id]
+    assert_equal 3, res[i.id][@cf_occur_in_new_and_assigned.id]
   end
 
   def test_newass_cfg_issue_new_resolved_assigned_resolved
-    cf_time_in_new_and_assigned = TestUtils.create_custom_filed 'IssueCustomField', 'Time_In_New_And_Assigned', 'float', 1
-    rcConfig_Time_In_Assigned = RcConfig.create(description: "New and Assigned Counter", status_id: 1, rc_type_id: 1, custom_field_id: cf_time_in_new_and_assigned.id)
-    rcConfig_Time_In_Assigned = RcConfig.create(description: "New and Assigned Counter", status_id: 2, rc_type_id: 1, custom_field_id: cf_time_in_new_and_assigned.id)
-
     i = TestUtils.create_issue(Time.new(2020, 11, 2, 7, 30), "RedCounter", 1)
     TestUtils.move_issue_to_resolved i, Time.new(2020, 11, 2, 9, 00)
     TestUtils.move_issue_to_assigned i, Time.new(2020, 11, 2, 10, 00)
@@ -105,7 +89,7 @@ class EvalTimeNewAndAssignedTest < ActionController::TestCase
     now = Time.new(2020, 11, 2, 19, 00)
     res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
 
-    assert_equal 1.5*60*60, res[i.id][cf_time_in_new_and_assigned.id]
+    assert_equal 2, res[i.id][@cf_occur_in_new_and_assigned.id]
   end
 
 end

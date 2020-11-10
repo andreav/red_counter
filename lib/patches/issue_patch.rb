@@ -45,6 +45,9 @@ module RedCounter
   end
 end
 
-unless Issue.included_modules.include?(RedCounter::Patches::IssuePatch)
-  Issue.send(:include, RedCounter::Patches::IssuePatch)
-end
+#
+# Uncomment this for enabling "update RCTYPE_OCCURRENCES counter" on issue save 
+#
+# unless Issue.included_modules.include?(RedCounter::Patches::IssuePatch)
+#   Issue.send(:include, RedCounter::Patches::IssuePatch)
+# end
