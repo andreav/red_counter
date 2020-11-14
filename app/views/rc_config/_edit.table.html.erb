@@ -1,0 +1,47 @@
+
+<% unless @rc_configs.count == 0 %>
+    <div class="">
+        <%= form_tag 'update_all' do %>
+            <table class="list" id="rc-configs">
+                <thead>
+                    <tr>
+                    <th><%= l(:rc_config_description) %></th>
+                    <th><%= l(:rc_config_custom_field) %></th>
+                    <th><%= l(:rc_config_rc_type) %></th>
+                    <th><%= l(:rc_config_status) %></th>
+                    <th><%= l(:rc_config_result_format) %></th>
+                    <th class="buttons"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @rc_configs.each do |config| %> 
+                        <%= fields_for "rc_configs[]", config do |formbuilder| %>
+                            <tr class="rc-configs-row">
+                            <td>
+                                <%= formbuilder.text_field :description %>
+                            </td>
+                            <td>
+                                <%= formbuilder.select :custom_field_id, options_for_select(@custom_fields_for_select, config[:custom_field_id]) %>
+                            </td>
+                            <td>
+                                <%= formbuilder.select :rc_type_id, options_for_select(@type_fields_for_select, config[:rc_type_id])  %>
+                            </td>
+                            <td>
+                                <%= formbuilder.select :status_id, options_for_select(@status_fields_for_select, config[:status_id])  %>   
+                            </td>
+                            <td>
+                                <%= formbuilder.select :result_format, options_for_select(@result_format_fields_for_select, config[:result_format])  %>
+                            </td>
+                            <td class="buttons">
+                                <%= link_to l(:button_delete), controller: 'rc_config', action: 'destroy', id: config[:id], method: :delete %>
+                            </td>
+                            </tr>
+                        <% end %>
+                    <% end %>
+                </tbody>
+            </table>
+            <%= submit_tag %>
+            <%= link_to l(:button_cancel), { :controller => 'admin', :action => "index" } , { :style => 'margin-left: 1em;' }%>
+        <% end %>
+    </div>
+<% end %>

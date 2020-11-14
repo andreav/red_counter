@@ -13,7 +13,7 @@ class RcConfigController < ApplicationController
     end
     
     def edit
-      @rc_configs = RcConfig.all 
+      @rc_configs = RcConfig.all.order(:custom_field_id, :description)
     end    
     
     def update

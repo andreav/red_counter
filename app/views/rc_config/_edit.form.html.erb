@@ -1,0 +1,36 @@
+
+<% unless @rc_configs.count == 0 %>
+    <div class="box tabular">
+        <%= form_tag 'update_all' do %>
+            <% @rc_configs.each do |config| %> 
+                <%= fields_for "rc_configs[]", config do |c| %>
+
+                    <%= render(partial: "form", locals: {form: c, config: config}) %>
+                    
+                    <p>
+                        <label></label>
+                        <%= link_to l(:rc_config_destroy), { :controller => 'rc_config', :action => "destroy", id: config.id }, { :class => 'icon icon-del', data: {confirm: l(:rc_messsage_delete_config) } }  %>
+
+                        <% if false %>
+                            <%= link_to :controller => 'rc_config', :action => "destroy", id: config.id do %>
+                                <button type='button'><%= l(:rc_config_destroy) %></button>
+                            <% end %>
+                        <% end %>
+
+                    </p>
+                    
+                    <br />
+                    <br />
+                <% end %>
+            <% end %>
+    </div>
+
+    <%= submit_tag %>
+    <%= link_to l(:button_cancel), { :controller => 'admin', :action => "index" } , { :style => 'margin-left: 1em;' }%>
+
+    <% end %>
+<% end %>
+
+
+
+    

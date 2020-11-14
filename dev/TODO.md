@@ -22,4 +22,4 @@
 - [x] aggiungi il save (:validate => false) sennò non salva
 - [x] aggiungi che se non è cambiato il dato, non lo deve scrivere a db (magari lo fa già controlla)
 - [ ] fai un test con un CF obbligatorio e no valorizzato e guarda che lo salvi lo stesso
-- [ ] visulizza per tabella
+- [x] visulizza per tabella
