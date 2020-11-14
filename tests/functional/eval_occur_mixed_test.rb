@@ -58,7 +58,7 @@ class EvalOccurMixedTest < ActionController::TestCase
     i4 = TestUtils.create_issue(Time.new(2020, 11, 2, 11, 30), "RedCounter 4:  new", 1)
 
     now = Time.new(2020, 11, 2, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, nil, now
+    res = Red_Counter::Helper.eval_time_spent_full nil, nil, now, true, true
 
     assert_equal 1, res[i1.id][cf_occur_in_new.id]
     assert_equal 1, res[i1.id][cf_occur_in_assigned.id]
@@ -96,7 +96,7 @@ class EvalOccurMixedTest < ActionController::TestCase
     i4 = TestUtils.create_issue(Time.new(2020, 11, 2, 11, 30), "RedCounter 4:  new", 1)
 
     now = Time.new(2020, 11, 2, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, nil, now
+    res = Red_Counter::Helper.eval_time_spent_full nil, nil, now, true, true
 
     assert_equal 2, res[i1.id][cf_occur_in_new_and_assigned.id]
 

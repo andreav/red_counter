@@ -44,13 +44,13 @@ class EvalTimeParamsTest < ActionController::TestCase
     i2 = TestUtils.create_issue(Time.new(2020, 11, 2, 11, 30), "RedCounter:  new 2", 1)
 
     now = Time.new(2020, 11, 2, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, nil, now
+    res = Red_Counter::Helper.eval_time_spent_full nil, nil, now, true, true
     assert_equal 2, res.keys.count
     assert res.key?(i.id)
     assert res.key?(i2.id)
 
     now = Time.new(2020, 11, 2, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
     assert_equal 1, res.keys.count
     assert res.key?(i.id)
   end
@@ -62,11 +62,11 @@ class EvalTimeParamsTest < ActionController::TestCase
     i = TestUtils.create_issue(Time.new(2020, 11, 2, 11, 30), "RedCounter:  new", 1)
 
     now = Time.new(2020, 11, 2, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now    
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now    , true, true
     assert_equal 5*60*60, res[i.id][cf_time_in_new.id]
 
     now = Time.new(2020, 11, 3, 10, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
     assert_equal 5*60*60 + 1.5*60*60, res[i.id][cf_time_in_new.id]
   end
 
@@ -80,7 +80,7 @@ class EvalTimeParamsTest < ActionController::TestCase
     i2 = TestUtils.create_issue(Time.new(2020, 10, 30, 11, 30), "RedCounter:  new 2", 1)
 
     now = Time.new(2020, 11, 3, 11, 30)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, nil, now
+    res = Red_Counter::Helper.eval_time_spent_full nil, nil, now, true, true
 
     assert_equal 8*60*60, res[i.id][cf_time_in_new.id]
     assert_equal 5*60*60 + 8*60*60 + 3*60*60, res[i2.id][cf_time_in_new.id]
@@ -96,19 +96,19 @@ class EvalTimeParamsTest < ActionController::TestCase
     i2 = TestUtils.create_issue(Time.new(2020, 11, 2, 10, 30), "RedCounter:  new 2", 1, project_id = 2)
 
     now = Time.new(2020, 11, 3, 11, 30)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, nil, now
+    res = Red_Counter::Helper.eval_time_spent_full nil, nil, now, true, true
 
     assert res.key?(i1.id)
     assert_not res.key?(i2.id)
 
     TestUtils.enable_module_on_project 2
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, nil, now
+    res = Red_Counter::Helper.eval_time_spent_full nil, nil, now, true, true
 
     assert res.key?(i1.id)
     assert res.key?(i2.id)
 
     TestUtils.disable_module_on_project 2
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, nil, now
+    res = Red_Counter::Helper.eval_time_spent_full nil, nil, now, true, true
 
     assert res.key?(i1.id)
     assert_not res.key?(i2.id)
@@ -134,7 +134,7 @@ class EvalTimeParamsTest < ActionController::TestCase
     TestUtils.enable_module_on_project 1
     TestUtils.disable_module_on_project 2
 
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, [1], now
+    res = Red_Counter::Helper.eval_time_spent_full nil, [1], now, true, true
 
     assert res.key?(i1.id)
     assert_equal 8*60*60, res[i1.id][cf_time_in_new.id]
@@ -146,7 +146,7 @@ class EvalTimeParamsTest < ActionController::TestCase
     # only prj2
     TestUtils.disable_module_on_project 1
     TestUtils.enable_module_on_project 2
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, [2], now
+    res = Red_Counter::Helper.eval_time_spent_full nil, [2], now, true, true
 
     assert_not res.key?(i1.id)
     
@@ -158,7 +158,7 @@ class EvalTimeParamsTest < ActionController::TestCase
     # prj1 and prj2
     TestUtils.enable_module_on_project 1
     TestUtils.enable_module_on_project 2
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, [1, 2], now
+    res = Red_Counter::Helper.eval_time_spent_full nil, [1, 2], now, true, true
 
     assert res.key?(i1.id)
     assert_equal 8*60*60, res[i1.id][cf_time_in_new.id]
@@ -169,7 +169,7 @@ class EvalTimeParamsTest < ActionController::TestCase
     assert_not res.key?(i3.id)
 
     # all prj
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, nil, now
+    res = Red_Counter::Helper.eval_time_spent_full nil, nil, now, true, true
 
     assert res.key?(i1.id)
     assert_equal 8*60*60, res[i1.id][cf_time_in_new.id]

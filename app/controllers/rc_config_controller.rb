@@ -102,7 +102,7 @@ class RcConfigController < ApplicationController
     
     end
   
-    def schedule_eval_time_spent_full_by_journals
+    def schedule_eval_time_spent_full
 
       EvalTimeSpentJob.perform_later(nil, nil)
 

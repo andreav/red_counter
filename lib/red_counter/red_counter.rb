@@ -49,7 +49,7 @@ module Red_Counter
         def self.eval_effective_seconds fromTime, toTime, rc_cfg
             startTime = sanitize_time fromTime, rc_cfg, true
             endTime = sanitize_time toTime, rc_cfg, false
-            Rails.logger.info("eval_effective_seconds: from: #{fromTime} - to: #{toTime} - fromSani: #{startTime} - toSani: #{endTime} ")
+            Rails.logger.debug("eval_effective_seconds: from: #{fromTime} - to: #{toTime} - fromSani: #{startTime} - toSani: #{endTime} ")
             # STDOUT.puts("eval_effective_seconds: from: #{fromTime} - to: #{toTime} - fromSani: #{startTime} - toSani: #{endTime} ")
 
             startTod = Tod::TimeOfDay(startTime)
@@ -90,7 +90,7 @@ module Red_Counter
 
             issue_jounal_details.each_with_index do |journal_det, index|
 
-                Rails.logger.debug("  issue_id: #{issue_jounal_details.first.journal.journalized_id.to_s.rjust(4, ' ')} - journal_id: #{journal_det.id.to_s.rjust(3, ' ')} - from: #{journal_det.old_value.to_s.rjust(3, ' ')} to: #{journal_det.value.to_s.rjust(3, ' ')} on #{journal_det.journal.created_on}" )
+                Rails.logger.debug("  issue_id: #{issue_jounal_details.first.journal.journalized_id.to_s.rjust(4, ' ')} - journal_id: #{journal_det.id.to_s.rjust(7, ' ')} - from: #{journal_det.old_value.to_s.rjust(3, ' ')} to: #{journal_det.value.to_s.rjust(3, ' ')} on #{journal_det.journal.created_on}" ) # useful log
 
                 if index == 0
                     if journal_det.value.to_i == counter_config.status_id
@@ -160,7 +160,7 @@ module Red_Counter
                     elapsedTime = elapsedTime_secs / (60*60)
                 end
             end
-            Rails.logger.info("    issue_id: #{issue_id} - counter: #{counter_config.description} - add_elapsed_time: #{elapsedTime}" )
+            Rails.logger.debug("  issue_id: #{issue_id} - counter: #{counter_config.description} - add_elapsed_time: #{elapsedTime}" ) # useful log
  
             issue_entry = issueCounterResults[issue_id]
             if issue_entry == nil
@@ -175,10 +175,10 @@ module Red_Counter
             issue_entry[custom_field_id] = elapsedTime
         end
 
-        def self.load_issues_query issues, projects, rc_config
+        def self.load_issues_query issues, projects, cf_ids
             projects_enabled_ids = EnabledModule.where(name: 'red_counter').pluck(:project_id)
             projects_to_search_ids = projects_enabled_ids
-            
+
             if projects
                 projects_to_search_ids = []
                 projects.each do |p_id|
@@ -188,7 +188,7 @@ module Red_Counter
                 end
             end
 
-            trackers_to_search_ids = Tracker.includes(:custom_fields).where(custom_fields: {id: rc_config.custom_field_id}).select([:tracker_id])
+            trackers_to_search_ids = Tracker.includes(:custom_fields).where(custom_fields: {id: cf_ids}).select([:tracker_id])
 
             compute_issues_query = Issue.where(tracker_id: trackers_to_search_ids).where(project_id: projects_to_search_ids)
             if issues
@@ -197,6 +197,7 @@ module Red_Counter
 
             compute_issues_query.select([:id, :created_on, :status_id])
         end
+
 
         def self.build_fake_journals issue_id, issue_created_on, first_issue_state_value, last_issue_state_value, now
             first_and_last_kake_journals = []
@@ -214,7 +215,7 @@ module Red_Counter
             first_and_last_kake_journals
         end
 
-        def self.process_issues_batch issues_batch, currCounterCfg, rc_cfg, issueCounterResults, now
+        def self.process_issues_batch issues_batch, curr_rc_config, rc_cfg, issueCounterResults, now
 
             # build issue_id --> created_on map / current state
             issue_creation_map = issues_batch.index_by(&:id)
@@ -222,7 +223,7 @@ module Red_Counter
 
             journals_by_issue = JournalDetail.includes(:journal)
                                 .where(prop_key: 'status_id')
-                                .where("(old_value = ? or value = ?)", currCounterCfg.status_id, currCounterCfg.status_id)
+                                .where("(old_value = ? or value = ?)", curr_rc_config.status_id, curr_rc_config.status_id)
                                 .where(journals: {journalized_type: 'issue'})
                                 .where(journals: {journalized_id: issues_batch_ids})
                                 .order(:id)
@@ -230,7 +231,7 @@ module Red_Counter
             
             journals_by_issue.each do |issue_id, issue_jounal_details|
 
-                Rails.logger.debug("Cfg: #{currCounterCfg.description} - Issue: #{issue_id} - Journal: #{issue_jounal_details}")
+                Rails.logger.debug("Cfg: #{curr_rc_config.description} - Issue: #{issue_id} - Journal: #{issue_jounal_details}")
 
                 first_state_value = issue_jounal_details.first.old_value.to_s
                 last_state_value = issue_jounal_details.last.value
@@ -239,7 +240,7 @@ module Red_Counter
                 issue_jounal_details.unshift(first_and_last_fake_journals[0])
                 issue_jounal_details << first_and_last_fake_journals[1]
 
-                process_issue_journal_details(issueCounterResults, issue_jounal_details, currCounterCfg, rc_cfg)
+                process_issue_journal_details(issueCounterResults, issue_jounal_details, curr_rc_config, rc_cfg)
             end
 
             # New issues does not have journals => have not yet been processed
@@ -249,20 +250,21 @@ module Red_Counter
             Rails.logger.debug("no_journal_issues: #{no_journal_issues}")
 
             no_journal_issues.each do |issue_no_journals|
-                Rails.logger.debug("Cfg: #{currCounterCfg.description} - Issue: #{issue_no_journals} - no_journal_issues")
+                Rails.logger.debug("Cfg: #{curr_rc_config.description} - Issue: #{issue_no_journals} - no_journal_issues")
 
                 first_state_value = issue_creation_map[issue_no_journals].status_id.to_s
                 last_state_value = issue_creation_map[issue_no_journals].status_id.to_s
                 first_and_last_fake_journals = build_fake_journals(issue_no_journals, issue_creation_map[issue_no_journals].created_on, first_state_value, last_state_value, now)
 
-                process_issue_journal_details(issueCounterResults, first_and_last_fake_journals, currCounterCfg, rc_cfg)
+                process_issue_journal_details(issueCounterResults, first_and_last_fake_journals, curr_rc_config, rc_cfg)
 
             end # no_journal_issues.each
 
         end  # process_issues_batch
 
-        def self.upsert_counters issueCounterResults, rc_counters, rc_cfg
-            
+        def self.upsert_counters issueCounterResults
+            starting = Time.now
+
             # 1. load all issues and cfv in one query
             # 2. execute 1 query only for any difference
             # TODO - bulk insert/update? https://github.com/zdennis/activerecord-import ?
@@ -270,46 +272,62 @@ module Red_Counter
             issue_ids = issueCounterResults.keys        
             issues_with_cvs = Issue.includes(:custom_values).where(id: issue_ids)
             issues_with_cvs.each do |issue_with_cvs|
+                do_save = false
                 issue_counters = issueCounterResults[issue_with_cvs.id]
                 issue_counters.each do |cf_id, issue_counter_value|
-                    issue_with_cvs.custom_field_values = { cf_id => issue_counter_value }
-                end 
-                issue_with_cvs.save
+                    # value is a string. to_f works for both int and float custom fields
+                    if issue_with_cvs.custom_value_for(cf_id) == nil || issue_with_cvs.custom_value_for(cf_id).value.to_f != issue_counter_value.to_f
+                        # Rails.logger.info("updating issue #{issue_with_cvs.id}, oldVal: #{issue_with_cvs.custom_value_for(cf_id)} - new val: #{issue_counter_value}")
+                        issue_with_cvs.custom_field_values = { cf_id => issue_counter_value }
+                        do_save = true
+                    end
+                end
+                
+                if do_save 
+                    if ! issue_with_cvs.save(:validate => false)
+                        Rails.logger.error("@ Error saving issueid: #{issue_with_cvs.id} - #{issue_counters} - #{issue_with_cvs.errors.full_messages}")
+                    end
+                end
             end
+
+            Rails.logger.info("upsert_counters: time: #{Time.now - starting} sec.")
         end
-
-
+  
         #
-        # main
+        # entrypoint
         #
-        def self.eval_time_spent_full_by_journals issues, projects, now = nil, upsert = true
-            # STDOUT.puts("eval_time_spent_full_by_journals #{issues}")
-            
+        def self.eval_time_spent_full issues, projects, now = nil, upsert = true, collect_results = false
             rc_cfg = Red_Counter::Config.new
             now = DateTime.now unless now != nil # use the same "now" for all issues
 
-            # countersElapsedTime = RcConfig.where(rc_type_id: Red_Counter::Config::RCTYPE_ELAPSED).includes(:custom_field)
-            countersElapsedTime = RcConfig.all.includes(:custom_field)
+            rc_configs = RcConfig.includes(:custom_field).all
             issueCounterResults = {}  # issue[:issue_id][:cf_id] = result
 
-            countersElapsedTime.each do |currCounterCfg|
+            # Find issues involved in counters and status_id (in case there is no journal)
+            issue_query = load_issues_query(issues, projects, rc_configs.pluck(:custom_field_id))
+            batch_size = 500            
+            issue_query.find_in_batches(:batch_size => batch_size) do |issue_batch|
+                starting = Time.now
 
-                # Find issues with this counter and retrieve created_on and status_id (in case there is no journal)
-                issue_query = load_issues_query(issues, projects, currCounterCfg)
-                issue_query.find_in_batches(:batch_size => 100) do |issue_batch|
-                    
-                    process_issues_batch(issue_batch, currCounterCfg, rc_cfg, issueCounterResults, now)
-
+                rc_configs.each do |curr_rc_config|                        
+                    process_issues_batch(issue_batch, curr_rc_config, rc_cfg, issueCounterResults, now)
+                end
+    
+                if upsert
+                    upsert_counters(issueCounterResults)
+                end
+                
+                if ! collect_results
+                    issueCounterResults = {} # empty dict, keep memory low. Test do not empty results
                 end
 
-            end  # countersElapsedTime.each
+                Rails.logger.info("batch of #{batch_size} issues processed in: #{Time.now - starting} sec.")
 
-            if upsert
-                upsert_counters(issueCounterResults, countersElapsedTime, rc_cfg)
-            end
+            end # issue_query.find_in_batches
+
             issueCounterResults
 
-        end # eval_time_spent_full_by_journals
+        end # eval_time_spent_full
 
     end # class
 end # module

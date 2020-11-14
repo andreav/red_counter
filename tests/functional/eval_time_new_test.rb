@@ -43,7 +43,7 @@ class EvalTimeNewTest < ActionController::TestCase
     i = TestUtils.create_issue(Time.new(2020, 11, 2, 11, 30), "RedCounter", 1)
 
     now = Time.new(2020, 11, 2, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
 
     assert res.key?(i.id)
     assert res[i.id].key?(cf_time_in_new.id)
@@ -58,7 +58,7 @@ class EvalTimeNewTest < ActionController::TestCase
     TestUtils.move_issue_to_assigned i, Time.new(2020, 11, 2, 14, 30)
 
     now = Time.new(2020, 11, 2, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
 
     assert_equal 2*60*60, res[i.id][cf_time_in_new.id]
   end
@@ -72,7 +72,7 @@ class EvalTimeNewTest < ActionController::TestCase
     TestUtils.move_issue_to_new i, Time.new(2020, 11, 3, 10, 30)
 
     now = Time.new(2020, 11, 4, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
 
     assert_equal 2*60*60 + 6*60*60 + 8*60*60, res[i.id][cf_time_in_new.id]
   end
@@ -87,7 +87,7 @@ class EvalTimeNewTest < ActionController::TestCase
     TestUtils.move_issue_to_resolved i, Time.new(2020, 11, 3, 18, 30)
 
     now = Time.new(2020, 11, 4, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
 
     assert_equal 2*60*60 + 6*60*60, res[i.id][cf_time_in_new.id]
   end

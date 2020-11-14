@@ -43,7 +43,7 @@ class UpsertCounters < ActionController::TestCase
     res[i1.id] = {cf_time_in_assigned.id => 10}
     res[i2.id] = {cf_time_in_assigned.id => 11}
 
-    res = Red_Counter::Helper.upsert_counters res, RcConfig.all, @rc_cfg
+    res = Red_Counter::Helper.upsert_counters res
 
     i1.reload
     i2.reload
@@ -72,7 +72,7 @@ class UpsertCounters < ActionController::TestCase
       cf_time_in_assigned.id => 11
     }
 
-    res = Red_Counter::Helper.upsert_counters res, RcConfig.all, @rc_cfg
+    res = Red_Counter::Helper.upsert_counters res
 
     i1.reload
     i2.reload
@@ -95,7 +95,7 @@ class UpsertCounters < ActionController::TestCase
     res[i1.id] = {cf_time_in_assigned.id => 10}
     res[i2.id] = {cf_time_in_assigned.id => 11}
 
-    res = Red_Counter::Helper.upsert_counters res, RcConfig.all, @rc_cfg
+    res = Red_Counter::Helper.upsert_counters res
 
     i1.reload
     i2.reload

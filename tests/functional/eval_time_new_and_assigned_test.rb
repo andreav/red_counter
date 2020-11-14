@@ -42,7 +42,7 @@ class EvalTimeNewAndAssignedTest < ActionController::TestCase
     i = TestUtils.create_issue(Time.new(2020, 11, 2, 7, 30), "RedCounter", 1)
 
     now = Time.new(2020, 11, 2, 12, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
 
     assert_equal 3.5*60*60, res[i.id][cf_time_in_new_and_assigned.id]
   end
@@ -56,7 +56,7 @@ class EvalTimeNewAndAssignedTest < ActionController::TestCase
     TestUtils.move_issue_to_assigned i, Time.new(2020, 11, 2, 9, 00)
 
     now = Time.new(2020, 11, 2, 13, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
 
     assert_equal 4*60*60, res[i.id][cf_time_in_new_and_assigned.id]
   end
@@ -71,7 +71,7 @@ class EvalTimeNewAndAssignedTest < ActionController::TestCase
     TestUtils.move_issue_to_new i, Time.new(2020, 11, 2, 10, 00)
 
     now = Time.new(2020, 11, 2, 19, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
 
     assert_equal 8*60*60, res[i.id][cf_time_in_new_and_assigned.id]
   end
@@ -87,7 +87,7 @@ class EvalTimeNewAndAssignedTest < ActionController::TestCase
     TestUtils.move_issue_to_resolved i, Time.new(2020, 11, 2, 11, 00)
 
     now = Time.new(2020, 11, 2, 19, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
 
     assert_equal 2.5*60*60, res[i.id][cf_time_in_new_and_assigned.id]
   end
@@ -103,7 +103,7 @@ class EvalTimeNewAndAssignedTest < ActionController::TestCase
     TestUtils.move_issue_to_resolved i, Time.new(2020, 11, 2, 11, 00)
 
     now = Time.new(2020, 11, 2, 19, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals [i], nil, now
+    res = Red_Counter::Helper.eval_time_spent_full [i], nil, now, true, true
 
     assert_equal 1.5*60*60, res[i.id][cf_time_in_new_and_assigned.id]
   end

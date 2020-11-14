@@ -5,7 +5,7 @@ namespace :red_counter do
         issues = ENV['ISSUES'].split(',').map { |s| s.to_i } rescue nil
         projects = ENV['PROJECTS'].split(',').map { |s| s.to_i } rescue nil
 
-        Red_Counter::Helper.eval_time_spent_full_by_journals issues, projects, DateTime.now, true
+        Red_Counter::Helper.eval_time_spent_full issues, projects, DateTime.now, true
     end
   
     desc "(Preview) - Eval Time Spent according to RedCounter configurations"
@@ -13,7 +13,7 @@ namespace :red_counter do
         issues = ENV['ISSUES'].split(',').map { |s| s.to_i } rescue nil
         projects = ENV['PROJECTS'].split(',').map { |s| s.to_i } rescue nil
 
-        res = Red_Counter::Helper.eval_time_spent_full_by_journals issues, projects, DateTime.now, false
+        res = Red_Counter::Helper.eval_time_spent_full issues, projects, DateTime.now, false, true
         STDOUT.puts res
     end
   

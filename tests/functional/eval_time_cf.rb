@@ -47,7 +47,7 @@ class EvalTimeParamsTest < ActionController::TestCase
     i1 = TestUtils.create_issue(Time.new(2020, 11, 2, 12, 00), "RedCounter:  new", 1)
 
     now = Time.new(2020, 11, 2, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, nil, now
+    res = Red_Counter::Helper.eval_time_spent_full nil, nil, now, true, true
     
     assert_equal 4.5*60*60, res[i1.id][cf_time_in_new_sec.id]
     assert_equal 4.5*60   , res[i1.id][cf_time_in_new_min.id]
@@ -67,7 +67,7 @@ class EvalTimeParamsTest < ActionController::TestCase
     i1 = TestUtils.create_issue(Time.new(2020, 11, 2, 12, 00), "RedCounter:  new", 1)
 
     now = Time.new(2020, 11, 2, 24, 00)
-    res = Red_Counter::Helper.eval_time_spent_full_by_journals nil, nil, now
+    res = Red_Counter::Helper.eval_time_spent_full nil, nil, now, true, true
     
     assert_equal 4.5*60*60, res[i1.id][cf_time_in_new_sec.id]
     assert_equal 4.5*60   , res[i1.id][cf_time_in_new_min.id]
