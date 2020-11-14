@@ -1,0 +1,25 @@
+- [x] Hook che su cambio stato aggiorna il contatore
+- [x] Task che gira e aggiorna lo stato
+- [x] Da maschera lanciare l'update di un progetto o di un issue
+- [x] Aggiungere Description
+- [x] Aggiungere nel task di filtrare solo per i progetti su cui il modulo è abilitato (ora fa su tutti) e magari passarlo anche da ENV (cosi per un progetto si può aggiornare più frequentemente)
+- [x] Fare che vada sia con CF int che con CF float
+- [x] Fare una cfg per settare la startWordDayTime e la endWordDayHour
+- [x] 8 ore sarebbero la diff tra le 2 endWordDayime - startWordDayHour 
+- [x] visualizzare a ore minuti o secondi il cf (u nparametro di config + template d quel cf)
+- [x] fitro per progetto
+- [x] cosa succede se creo un nuovo cf, agli issue già creati? Quando salvo si prendono il campo nuovo?
+- [x] gestione date UTC
+- [ ] validazione dei settings. Almeno un popup o qualcosa 
+- [x] togli la patch degli issue e metti tutto nel calolo
+- [x] prova su db duferco
+- [x] include custom_field e se è un int => round(0) sennò round(1)
+- [x] fare il giro per issue (cosi ne carico N alla volta e per ogni issue calcoalre tutti i contatori)
+- [ ] immagine aggiunegre al pluign
+- [ ] screenshot per readme
+- [ ] mettere i comandi sotto cartella dev
+- [x] metti il group by cf quando tiri su i counter cosi puoi processare gli issue e salvarli a batches (sennò la connessione rimane aperta per troppo)
+- [x] aggiungi il save (:validate => false) sennò non salva
+- [x] aggiungi che se non è cambiato il dato, non lo deve scrivere a db (magari lo fa già controlla)
+- [ ] fai un test con un CF obbligatorio e no valorizzato e guarda che lo salvi lo stesso
+- [ ] visulizza per tabella
