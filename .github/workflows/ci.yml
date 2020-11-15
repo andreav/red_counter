@@ -38,9 +38,9 @@ jobs:
             docker cp ../red_counter/ $(docker-compose -f dev/docker-compose-ci-yml ps -q redmine):/opt/bitnami/redmine/plugins
             docker exec $(docker-compose -f dev/docker-compose-ci-yml ps -q mariadb) mysql -u root -e "show grants for redmine; GRANT ALL PRIVILEGES ON *.* TO 'redmine'@'%'; show grants for redmine;"
             docker cp dev/setup_env.sh $(docker-compose -f dev/docker-compose-ci-yml ps -q redmine):/
+            docker exec $(docker-compose -f dev/docker-compose-ci-yml ps -q redmine) bash -e /setup_env.sh
 
       - name: Run tests
         run: |
             docker cp dev/run_tests.sh $(docker-compose -f dev/docker-compose-ci-yml ps -q redmine):/
-            docker exec $(docker-compose -f dev/docker-compose-ci-yml ps -q redmine) bash -e /setup_env.sh
             docker exec $(docker-compose -f dev/docker-compose-ci-yml ps -q redmine) bash -e /run_tests.sh
