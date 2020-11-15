@@ -24,7 +24,7 @@ Redmine::Plugin.register :red_counter do
   },
   :partial => 'settings/red_counter_settings'
 
-  menu :admin_menu, :red_counter, { controller: 'rc_config', action: 'edit' }, caption: :red_counter, html: { class: 'icon icon-calendar' }
+  menu :admin_menu, :red_counter, { controller: 'rc_config', action: 'edit' }, caption: :red_counter, html: { class: 'icon icon-hourglass' }
 
   project_module :red_counter do
     permission :view_redcounter_config, :rc_config => :show
@@ -32,4 +32,9 @@ Redmine::Plugin.register :red_counter do
   end
 end
 
-# require 'red_counter'
+class RedmineToolbarHookListener < Redmine::Hook::ViewListener
+  def view_layouts_base_html_head(context)
+    # javascript_include_tag('sutcomjs', :plugin => :red_counter ) +
+    stylesheet_link_tag('style', :plugin => :red_counter )
+  end
+end

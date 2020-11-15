@@ -1,0 +1,8 @@
+.icon-hourglass {
+    background-image: url("../images/hourglass.png");
+  }
+  
+.contextual.rc-counter-contextual {
+  width: 100%;
+  text-align: right;
+}

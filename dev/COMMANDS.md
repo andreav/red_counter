@@ -66,6 +66,10 @@
        bundle exec rails redmine:plugins:migrate RAILS_ENV=development
        bundle exec rails redmine:plugins:migrate RAILS_ENV=production
 
+    5. deploy assets
+       bundle exec rails redmine:plugins:assets RAILS_ENV=production
+
+
 # Reset schema for single plugin
 
     drop table rc_configs;

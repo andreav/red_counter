@@ -15,7 +15,7 @@
 - [x] prova su db duferco
 - [x] include custom_field e se è un int => round(0) sennò round(1)
 - [x] fare il giro per issue (cosi ne carico N alla volta e per ogni issue calcoalre tutti i contatori)
-- [ ] immagine aggiunegre al pluign
+- [x] immagine aggiunegre al pluign
 - [ ] screenshot per readme
 - [ ] mettere i comandi sotto cartella dev
 - [x] metti il group by cf quando tiri su i counter cosi puoi processare gli issue e salvarli a batches (sennò la connessione rimane aperta per troppo)
