@@ -11,26 +11,6 @@ Users can configure working hours according to their own needs.
 
 Red Counter can be enabled at project level.
 
-# Installation
-
-To install it, follow steps for standard Redmine plugin [here](https://www.redmine.org/projects/redmine/wiki/plugins).
-
-Clone it into the plugins-directory. Execute
-
-    git clone https://github.com/andreav/red_counter.git red_counter
-
-in your plugins directory.
-
-database migration:
-
-    cd ..
-    rake redmine:plugins:migrate
-
-reload web service
-
-    touch tmp/restart.txt
-
-
 # Configuring Counters
 
 Counters are configured from Administration -> Red Counter -> "Create a new counter".
@@ -111,6 +91,3 @@ Rake task also accepts two env variables (can also be provided together):
   `RAILS_ENV=production PROJECTS=1,2 bundle exec rake red_counter:eval_time_spent`
 
 
-# Supported Redmine versions
-
-This plugin has been developed & tested using Redmine 4.1.

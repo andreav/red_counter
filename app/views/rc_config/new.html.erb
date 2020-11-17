@@ -12,3 +12,14 @@
 </p>
 
 <% end %>
+
+<%= javascript_tag do %>
+// On change
+$('.rc_config_rc_type_id').on('change', function(e){
+    if(this.value == "2") { // RCTYPE_OCCURRENCES
+        $('.rc_config_result_format_container').hide();
+    } else {
+        $('.rc_config_result_format_container').show();
+    }
+});
+<% end %>

@@ -24,13 +24,13 @@
                                 <%= formbuilder.select :custom_field_id, options_for_select(@custom_fields_for_select, config[:custom_field_id]) %>
                             </td>
                             <td>
-                                <%= formbuilder.select :rc_type_id, options_for_select(@type_fields_for_select, config[:rc_type_id])  %>
+                                <%= formbuilder.select :rc_type_id, options_for_select(@type_fields_for_select, config[:rc_type_id]), {}, :class => 'rc_config_rc_type_id'  %>
                             </td>
                             <td>
                                 <%= formbuilder.select :status_id, options_for_select(@status_fields_for_select, config[:status_id])  %>   
                             </td>
                             <td>
-                                <%= formbuilder.select :result_format, options_for_select(@result_format_fields_for_select, config[:result_format])  %>
+                                <%= formbuilder.select :result_format, options_for_select(@result_format_fields_for_select, config[:result_format]), {}, :class => 'rc_config_result_format'  %>
                             </td>
                             <td class="buttons">
                                 <%= link_to l(:button_delete), controller: 'rc_config', action: 'destroy', id: config[:id], method: :delete %>
@@ -44,4 +44,23 @@
             <%= link_to l(:button_cancel), { :controller => 'admin', :action => "index" } , { :style => 'margin-left: 1em;' }%>
         <% end %>
     </div>
+<% end %>
+
+<%= javascript_tag do %>
+// Init
+$('#rc-configs tr').each(function( index ) {
+  const $rc_type_id = $(this).find('.rc_config_rc_type_id')
+  if($rc_type_id && $rc_type_id[0] && $rc_type_id[0].value == 2) {  // RCTYPE_OCCURRENCES
+    $(this).find('.rc_config_result_format').hide();
+  }
+});
+
+// On change
+$('#rc-configs').on('change', 'select.rc_config_rc_type_id', function(e){
+    if(this.value == "2") { // RCTYPE_OCCURRENCES
+        $(this).parents('#rc-configs tr').find('.rc_config_result_format').hide();
+    } else {
+        $(this).parents('#rc-configs tr').find('.rc_config_result_format').show();
+    }
+});
 <% end %>
