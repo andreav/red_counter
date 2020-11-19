@@ -98,7 +98,7 @@ module Red_Counter
 
             issue_jounal_details.each_with_index do |journal_det, index|
 
-                Rails.logger.debug("  issue_id: #{issue_jounal_details.first.journal.journalized_id.to_s.rjust(4, ' ')} - journal_id: #{journal_det.id.to_s.rjust(7, ' ')}: \t #{issuestatusid2name[journal_det.old_value.to_i].truncate(20).rjust(20, ' ')} (#{journal_det.old_value.to_i}) -> (#{journal_det.value.to_i}) #{issuestatusid2name[journal_det.value.to_i].truncate(20).ljust(20, ' ')} \t on #{journal_det.journal.created_on}" ) # usefull log
+                Rails.logger.debug("  issue_id: #{issue_jounal_details.first.journal.journalized_id.to_s.rjust(4, ' ')} - journal_id: #{journal_det.id.to_s.rjust(7, ' ')}: \t #{issuestatusid2name.fetch(journal_det.old_value.to_i, journal_det.old_value.to_s).truncate(20).rjust(20, ' ')} (#{journal_det.old_value.to_i}) -> (#{journal_det.value.to_i}) #{issuestatusid2name.fetch(journal_det.value.to_i, journal_det.value.to_s).truncate(20).ljust(20, ' ')} \t on #{journal_det.journal.created_on}" ) # usefull log
 
                 if index == 0
                     if journal_det.value.to_i == counter_config.status_id
