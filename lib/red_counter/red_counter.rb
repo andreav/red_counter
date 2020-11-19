@@ -10,6 +10,14 @@ module Red_Counter
     class Helper
         extend Redmine::Utils::DateCalculation
 
+        def self.issuestatusid2name
+            unless @issuestatusid2name
+                @issuestatusid2name = Hash[ IssueStatus.all.map{ |is| [is.id, is.name] } ]
+                @issuestatusid2name[-1] = "fake"
+            end
+            @issuestatusid2name
+        end
+
         #
         # Converts from any time to working times
         #
@@ -90,7 +98,7 @@ module Red_Counter
 
             issue_jounal_details.each_with_index do |journal_det, index|
 
-                Rails.logger.debug("  issue_id: #{issue_jounal_details.first.journal.journalized_id.to_s.rjust(4, ' ')} - journal_id: #{journal_det.id.to_s.rjust(7, ' ')} - from: #{journal_det.old_value.to_s.rjust(3, ' ')} to: #{journal_det.value.to_s.rjust(3, ' ')} on #{journal_det.journal.created_on}" ) # useful log
+                Rails.logger.debug("  issue_id: #{issue_jounal_details.first.journal.journalized_id.to_s.rjust(4, ' ')} - journal_id: #{journal_det.id.to_s.rjust(7, ' ')}: \t #{issuestatusid2name[journal_det.old_value.to_i].truncate(20).rjust(20, ' ')} (#{journal_det.old_value.to_i}) -> (#{journal_det.value.to_i}) #{issuestatusid2name[journal_det.value.to_i].truncate(20).ljust(20, ' ')} \t on #{journal_det.journal.created_on}" ) # usefull log
 
                 if index == 0
                     if journal_det.value.to_i == counter_config.status_id
@@ -150,17 +158,21 @@ module Red_Counter
         def self.add_elapsed_time issueCounterResults, issue_id, elapsedTime_secs, counter_config
             custom_field_id = counter_config.custom_field_id
             elapsedTime = elapsedTime_secs
-            if(counter_config.result_format == Red_Counter::Config::RESULT_FORMAT_MINUTES)
-                elapsedTime = elapsedTime_secs / 60
-            elsif(counter_config.result_format == Red_Counter::Config::RESULT_FORMAT_HOURS)
-                # if the custom fiels is int, we cannot write a float
-                if(counter_config.custom_field.field_format == "float")
-                    elapsedTime = (elapsedTime_secs.to_f / (60*60)).round(1)
-                else
-                    elapsedTime = elapsedTime_secs / (60*60)
+            if counter_config.rc_type_id == Red_Counter::Config::RCTYPE_OCCURRENCES
+                # no need to sanitize timer (it's a .count)
+            elsif counter_config.rc_type_id == Red_Counter::Config::RCTYPE_ELAPSED
+                if(counter_config.result_format == Red_Counter::Config::RESULT_FORMAT_MINUTES)
+                    elapsedTime = elapsedTime_secs / 60
+                elsif(counter_config.result_format == Red_Counter::Config::RESULT_FORMAT_HOURS)
+                    # if the custom fiels is int, we cannot write a float
+                    if(counter_config.custom_field.field_format == "float")
+                        elapsedTime = (elapsedTime_secs.to_f / (60*60)).round(1)
+                    else
+                        elapsedTime = elapsedTime_secs / (60*60)
+                    end
                 end
             end
-            Rails.logger.debug("  issue_id: #{issue_id} - counter: #{counter_config.description} - add_elapsed_time: #{elapsedTime}" ) # useful log
+            Rails.logger.debug("  issue_id: #{issue_id} - counter: #{counter_config.description} - add_elapsed_time: #{elapsedTime}" ) # usefull log
  
             issue_entry = issueCounterResults[issue_id]
             if issue_entry == nil
@@ -231,7 +243,7 @@ module Red_Counter
             
             journals_by_issue.each do |issue_id, issue_jounal_details|
 
-                Rails.logger.debug("Cfg: #{curr_rc_config.description} - Issue: #{issue_id} - Journal: #{issue_jounal_details}")
+                Rails.logger.debug("Cfg: #{curr_rc_config.description}(#{curr_rc_config.status_id}) - Issue: #{issue_id} - Journal: #{issue_jounal_details}") # usefull log
 
                 first_state_value = issue_jounal_details.first.old_value.to_s
                 last_state_value = issue_jounal_details.last.value
