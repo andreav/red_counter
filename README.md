@@ -56,6 +56,8 @@ Workind days are configured directly from Redmine Administration -> Settings -> 
 
 Working hours are configured from plugin configuration page (Administration -> Plugins -> Red Counter -> Configure).
 
+![red counter - configuring working hours](./docs/images/red_counter_plugin_cfg.png)
+
 User must specify a Timezone and up to two working hours periods.
 
 Default working hours periods are: 8:30-12:30 and 13:30-17:30.  
@@ -91,5 +93,20 @@ Rake task also accepts two env variables (can also be provided together):
   Usefull for updating different projects with different frequency intervals.
 
   `RAILS_ENV=production PROJECTS=1,2 bundle exec rake red_counter:eval_time_spent`
+
+
+# Configuration example
+
+In the following example we configure 3 counters:
+
+- One counter measures how long a ticket stays in the "New" state
+- One counter sums up how long a ticket stays in the "In Progress", "Reopend" and "In Progress Outsourced" states
+- One counter counts how many times a ticket has been Reopened
+
+![red counter - configuration example](./docs/images/red_counter_counters_cfg.png)
+
+On the issue, the result is the following:
+
+![red counter - issue results ](./docs/images/red_counter_counters_results.png)
 
 
