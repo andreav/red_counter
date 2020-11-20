@@ -50,9 +50,9 @@ For example, if user needs to count time spent when the issue is both Assigned a
 
 # Configuring Working Hours
 
-Time-spent counters are evaluated according to workind days and working hours.
+Time-spent counters are evaluated according to working days and working hours.
 
-Workind days are configured directly from Redmine Administration -> Settings -> Issue Trackingg -> "Non-working days".
+Working days are configured directly from Redmine Administration -> Settings -> Issue Tracking -> "Non-working days".
 
 Working hours are configured from plugin configuration page (Administration -> Plugins -> Red Counter -> Configure).
 
